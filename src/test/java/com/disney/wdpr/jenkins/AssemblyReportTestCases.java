@@ -29,7 +29,6 @@ public class AssemblyReportTestCases {
 
     ReportManagerImpl reportManager;
     private JenkinsIntegration jenkinsIntegration;
-//    private ODataIntegrationImpl oDataIntegrationImpl;
 
     @Test
     public void testProcess() throws Exception {
@@ -89,65 +88,6 @@ public class AssemblyReportTestCases {
         }
 
     }
-
-//    @Test
-//    public void testApi() {
-//
-//        try {
-//            final List<JamData> discussions = new ArrayList<JamData>();
-//
-//            final String firstname = "Reggie";
-//            final String lastname = "Blanco";
-//            String userId="92049268";
-//
-////            final String firstname = "Tiffany";
-////            final String lastname = "Collis";
-////            String userId="94000783";
-//
-////          final String firstname = "Pedro";
-////          final String lastname = "Fernandez";
-////          String userId="00132829";
-//
-//
-//            final Employee employee = new Employee(userId, firstname, lastname, "P");
-//
-//
-//            userId = "00000000".substring(userId.length()) + userId;
-//
-//            final String token = oDataIntegrationImpl.getToken(userId);
-//            log.fatal(token);
-//
-//            final List<TaskAssignment> tasks = oDataIntegrationImpl.getTasks(token, userId);
-//            for (final TaskAssignment taskAssignment : tasks) {
-//                log.info(taskAssignment.getId());
-//            }
-//
-//            final Set<Group> groups = oDataIntegrationImpl.getGroups(token, employee);
-//            // oDataIntegrationImpl.getGroups("d5G8Gs9dWlfRV5atocx9PmidV4KxTf0MlwUq8kii");
-//
-//            log.info(groups.size());
-//            SortedSet<Comment> comments = null;
-//            for (final Group group : groups) {
-//                discussions.addAll(oDataIntegrationImpl.getDiscussions(token, userId, group.getId()));
-//                log.info("discussions size: " + discussions.size());
-//                for (final JamData discussion : discussions) {
-//                    log.info(discussion.getId());
-//                    comments = oDataIntegrationImpl.getComments(token, userId, discussion.getId());
-//
-//                    for (final Comment comment : comments) {
-//                        log.info("comment creator: " + comment.getCommentCreator().getLastName());
-//                    }
-//
-//                }
-//            }
-//        } catch (final RuntimeException e) {
-//            e.printStackTrace();
-//            throw e;
-//        }
-//
-//    }
-
-
 
     @Resource
     public void setReportManagerImpl(final ReportManagerImpl reportManager) {
