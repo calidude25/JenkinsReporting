@@ -19,20 +19,10 @@ public class Launch
 
     // private Map<String, String> arguments;
     private static AbstractApplicationContext appContext;
-    public final static String MODE_PARAM_EXTRACT = "extract";
-    public final static String MODE_PARAM_EXTRACT_NOW = "extractNow";
-    public final static String MODE_PARAM_AUDIT = "audit";
-    public final static String MODE_PARAM_AUDIT_NOW = "auditNow";
 
     public final static String SHARED_CONTEXT = "sharedContext.xml";
-    public final static String EXTRACT_CONTEXT = "extractContext.xml";
-    public final static String AUDIT_CONTEXT = "auditContext.xml";
-    public final static String EXTRACT_QUARTZ_CONTEXT = "extractQuartzContext.xml";
-    public final static String AUDIT_QUARTZ_CONTEXT = "auditQuartzContext.xml";
-    public final static String SCHEDULER_FACTORY_BEAN ="schedulerFactoryBean";
-
-    public final static String AUDIT_BEAN = "auditManager";
-    public final static String EXTRACT_BEAN = "reportManager";
+    public final static String REPORT_CONTEXT = "reportContext.xml";
+    public final static String REPORT_BEAN = "reportManager";
 
 
     /**
@@ -67,34 +57,13 @@ public class Launch
 
         try
         {
-            if (args == null || args.length < 1)
-            {
-                throw new RuntimeException("Parameter list cannot be null: \n" + help());
-            }
+//            if (args == null || args.length < 1)
+//            {
+//                throw new RuntimeException("Parameter list cannot be null: \n" + help());
+//            }
 
-            String mainBean=null;
-            String ndc = null;
-            if (args[0].equals(MODE_PARAM_AUDIT)) {
-                setAppContext(new String[] { SHARED_CONTEXT,AUDIT_CONTEXT,AUDIT_QUARTZ_CONTEXT });
-                ndc = MODE_PARAM_AUDIT;
-            } else if (args[0].equals(MODE_PARAM_AUDIT_NOW)){
-                setAppContext(new String[] { SHARED_CONTEXT,AUDIT_CONTEXT });
-                mainBean=AUDIT_BEAN;
-                ndc = MODE_PARAM_AUDIT;
-            } else if (args[0].equals(MODE_PARAM_EXTRACT)){
-                setAppContext(new String[] { SHARED_CONTEXT,EXTRACT_CONTEXT,EXTRACT_QUARTZ_CONTEXT });
-                ndc = MODE_PARAM_EXTRACT;
-            } else if (args[0].equals(MODE_PARAM_EXTRACT_NOW)){
-                setAppContext(new String[] { SHARED_CONTEXT,EXTRACT_CONTEXT });
-                mainBean=EXTRACT_BEAN;
-                ndc = MODE_PARAM_EXTRACT;
-            } else {
-                throw new RuntimeException("Incorrect paramter: \n" + help());
-            }
-
-            NDC.push(ndc);
-            LOG.warn("Nested Diagnotic Context starting...");
-
+            setAppContext(new String[] { SHARED_CONTEXT,REPORT_CONTEXT});
+            String mainBean=REPORT_BEAN;
 
             // register shutdown hooks
             Launch.appContext.registerShutdownHook();
@@ -105,21 +74,13 @@ public class Launch
             DiagSignalHandler.install("TERM");// Termination request. JVM will exit normally.
             DiagSignalHandler.install("ABRT");// Abnormal termination. The JVM raises this signal whenever it detects a JVM fault.
 
-            // process now, or schedule?
-            if(mainBean!=null) {
-                final JobManager job = (JobManager) Launch.appContext.getBean(mainBean);
-                job.process("03. Appium Mobile Tests");
-            } else {
-                Launch.appContext.getBean("schedulerFactoryBean");
-            }
+            final JobManager job = (JobManager) Launch.appContext.getBean(mainBean);
+            job.process("03. Appium Mobile Tests");
         }
         catch (final Exception e)
         {
             Launch.LOG.error("Failure launching Spring", e);
             throw new RuntimeException(e);
-        } finally {
-            NDC.pop();
-            NDC.remove();
         }
     }
 
