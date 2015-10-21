@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -30,12 +29,9 @@ import com.disney.wdpr.jenkins.dto.report.Job;
 import com.disney.wdpr.jenkins.dto.report.JobListing;
 import com.disney.wdpr.jenkins.dto.report.TestReport;
 import com.disney.wdpr.jenkins.dto.report.View;
-import com.disney.wdpr.jenkins.dto.report.archive.JamData;
 import com.disney.wdpr.jenkins.dto.report.issues.TestCase;
 import com.disney.wdpr.jenkins.integration.report.JenkinsIntegration;
 import com.disney.wdpr.jenkins.manager.JobManager;
-import com.disney.wdpr.jenkins.manager.LoadReport;
-import com.disney.wdpr.jenkins.manager.ManagerUtils;
 import com.disney.wdpr.jenkins.vo.Totals;
 
 /**
@@ -44,19 +40,11 @@ import com.disney.wdpr.jenkins.vo.Totals;
 public class ReportManagerImpl implements JobManager {
 
     private static Logger log = Logger.getLogger(ReportManagerImpl.class);
-    private String localWorkingDirectory;
-    private String localArchiveDirectory;
 
     private String finalReportFilename;
-    private LoadReport loadEmployeeReport;
-    private ManagerUtils managerUtils;
-
     private JenkinsIntegration jenkinsIntegration;
 
     protected final static String OUTPUT_FILE_NAME = "CQA_Automation_Summary_Report.xlsx";
-
-
-
     protected final static int JOB_CELL = 0;
     protected final static int COUNT_CELL = 1;
     protected final static int PASS_CELL = 2;
@@ -285,43 +273,6 @@ public class ReportManagerImpl implements JobManager {
         cell.setCellStyle(style);
     }
 
-
-//    protected void executeApiRequests(final Employee employee, final SortedSet<JamData> tasks, final SortedSet<JamData> discussions, final SortedSet<JamData> comments,
-//            final List<Exception> failures) {
-//        try {
-//            final SortedSet<JamData> currentDiscussions = getNewJamSet();
-//            final String employeeUserId = employee.getUserId();
-//
-//            // make rest call to get token
-//            log.info("Executing token request... ");
-//            final String token = oDataIntegration.getToken(employeeUserId);
-//
-//            // get tasks
-//            tasks.addAll(oDataIntegration.getTasks(token, employeeUserId));
-//
-//            // get groups
-//            log.info("Executing groups request... ");
-//            final Set<Group> groups = oDataIntegration.getGroups(token, employee);
-//
-//            // get discussions
-//            log.info("Executing discussions request... ");
-//            for (final Group group : groups) {
-//                currentDiscussions.addAll(oDataIntegration.getDiscussions(token, employeeUserId, group.getId()));
-//                discussions.addAll(currentDiscussions);
-//            }
-//
-//            // get comments
-//            log.info("Executing comments request... ");
-//            for (final JamData discussion : currentDiscussions) {
-//                comments.addAll(oDataIntegration.getComments(token, employeeUserId, discussion.getId()));
-//            }
-//        } catch (final Exception e) {
-//            failures.add(e);
-//            log.fatal("Failed executing API call",e);
-//        }
-//    }
-
-
     protected void checkExceptions(final Date date, final List<Exception> failures) throws Exception{
         log.info("Checking for exceptions... ");
         final StringBuilder exceptionMessages = new StringBuilder("<br><br>");
@@ -330,123 +281,13 @@ public class ReportManagerImpl implements JobManager {
         }
     }
 
-//    protected void createReports(final SortedSet<JamData> tasks, final SortedSet<JamData> discussions, final SortedSet<JamData> comments) throws IOException {
-//        log.warn("Creating commitments report...");
-//        createReport(commitmentsReportFilename,
-//                TaskAssignment.getHeader(), tasks);
-//        log.warn("Creating discussion report...");
-//        createReport(discussionReportFilename,
-//                Discussion.getHeader(), discussions);
-//        log.warn("Creating comment report...");
-//        createReport(commentsReportFilename,
-//                Comment.getHeader(), comments);
-//
-//    }
-
-//    protected Map<String, GenericDto> getNewEmployeeMap() {
-//        return new HashMap<String, GenericDto>();
-//    }
-
-//    protected SortedSet<JamData> getNewJamSet() {
-//        return new TreeSet<JamData>();
-//    }
-
     protected List<Exception> getNewExceptionList() {
         return new ArrayList<Exception>();
     }
 
-//    protected void createCompleteStatusFile() throws IOException{
-//        new File(localWorkingDirectory+File.separator+completeStatusFilename).createNewFile();
-//    }
-
     protected Date getDate() {
         return new Date();
     }
-
-
-    protected void createReport(final String reportFilename, final String header, final Set<JamData> data) throws IOException {
-//        BufferedWriter writer = null;
-//
-//        try {
-//            writer = managerUtils.getWriter(reportFilename);
-//
-//            // create header record
-//            writer.write(header);
-//            writer.newLine();
-//            for (final JamData jamData : data) {
-//                writer.write(jamData.getRecord());
-//                writer.newLine();
-//            }
-//
-//        } finally {
-//            if (writer!=null) {
-//                writer.flush();
-//                writer.close();
-//            }
-//        }
-
-    }
-
-    public void setLocalWorkingDirectory(final String localWorkingDirectory) {
-        this.localWorkingDirectory = localWorkingDirectory;
-    }
-
-//    public void setCommitmentsReportFilename(final String commitmentsReportFilename) {
-//        this.commitmentsReportFilename = commitmentsReportFilename;
-//    }
-//
-//    public void setDiscussionReportFilename(final String discussionReportFilename) {
-//        this.discussionReportFilename = discussionReportFilename;
-//    }
-//
-//    public void setCommentsReportFilename(final String commentsReportFilename) {
-//        this.commentsReportFilename = commentsReportFilename;
-//    }
-
-    protected String getFinalReportFilename() {
-        return finalReportFilename;
-    }
-
-    public void setFinalReportFilename(final String finalReportFilename) {
-        this.finalReportFilename = finalReportFilename;
-    }
-
-//    public void setCompleteStatusFilename(final String completeStatusFilename) {
-//        this.completeStatusFilename = completeStatusFilename;
-//    }
-//
-//    protected Map<String, GenericDto> getEmployeeMap() {
-//        return employeeMap;
-//    }
-
-
-
-    protected LoadReport getLoadEmployeeReport() {
-        return loadEmployeeReport;
-    }
-
-    public void setLoadEmployeeReport(final LoadReport loadEmployeeReport) {
-        this.loadEmployeeReport = loadEmployeeReport;
-    }
-
-    public void setManagerUtils(final ManagerUtils managerUtils) {
-        this.managerUtils = managerUtils;
-    }
-
-
-//    public void setEmployeeReportFilename(final String employeeReportFilename) {
-//        this.employeeReportFilename = employeeReportFilename;
-//    }
-//
-//
-//    public void setOutputReportDateFormat(final String outputReportDateFormat) {
-//        this.outputReportDateFormat = outputReportDateFormat;
-//    }
-
-    public void setLocalArchiveDirectory(final String localArchiveDirectory) {
-        this.localArchiveDirectory = localArchiveDirectory;
-    }
-
 
     public void setJenkinsIntegration(JenkinsIntegration jenkinsApiIntegration) {
         this.jenkinsIntegration = jenkinsApiIntegration;

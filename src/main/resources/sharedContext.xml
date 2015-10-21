@@ -13,23 +13,4 @@
 		<property name="searchSystemEnvironment" value="true" />
 	</bean>
 
-
-	<!-- <context:property-placeholder location="classpath:lms.properties" /> -->
-
-	<!-- <bean id="propertyConfigurer" class="org.jasypt.spring31.properties.EncryptablePropertyPlaceholderConfigurer"> 
-		<constructor-arg ref="configurationEncryptor" /> <property name="locations"> 
-		<list> <value>common.properties</value> <value>lms.properties</value> <value>jam.properties</value> 
-		</list> </property> </bean> <bean id="managerUtils" class="com.disney.lms.manager.ManagerUtils"> 
-		<property name="archiveFileAppenderDateFormat" value="${archive.file.appender.date.format}" 
-		/> <property name="zipFileExtensionDateFormat" value="${zip.file.extension.date.format}" 
-		/> <property name="localArchiveDirectory" ref="localArchiveDir" /> <property 
-		name="localWorkingDirectory" ref="localWorkingDir" /> <property name="daysToKeepArchives" 
-		value="${days.to.keep.archives}" /> </bean> <bean id="configurationEncryptor" 
-		class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor"> <property name="config" 
-		ref="environmentVariablesConfiguration" /> </bean> <bean id="environmentVariablesConfiguration" 
-		class="org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig"> <property 
-		name="algorithm" value="PBEWithMD5AndDES" /> <property name="passwordEnvName" 
-		value="APP_ENCRYPTION_PASSWORD" /> </bean> -->
-
-
 </beans>

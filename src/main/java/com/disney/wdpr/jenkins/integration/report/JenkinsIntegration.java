@@ -81,21 +81,8 @@ public class JenkinsIntegration {
         messageConverters.add(new MappingJacksonHttpMessageConverter());
         restTemplate.setMessageConverters(messageConverters);
 
-        if(log.isDebugEnabled()){
-            addLoggingInterceptor(restTemplate);
-        }
-
         return restTemplate;
 
-    }
-
-    protected void addLoggingInterceptor(final RestTemplate restTemplate){
-        final ClientHttpRequestInterceptor ri = new LoggingRequestInterceptor();
-        final List<ClientHttpRequestInterceptor> ris = new ArrayList<ClientHttpRequestInterceptor>();
-        ris.add(ri);
-        restTemplate.setInterceptors(ris);
-        restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(
-        new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()), ris));
     }
 
     public void setJenkinsURL(String jenkinsURL) {
