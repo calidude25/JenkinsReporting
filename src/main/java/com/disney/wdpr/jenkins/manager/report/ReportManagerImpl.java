@@ -53,7 +53,7 @@ public class ReportManagerImpl implements JobManager {
 
     private JenkinsIntegration jenkinsIntegration;
 
-    protected final static String OUTPUT_FILE_NAME = "CQA_Automation_Summary_Report2.xlsx";
+    protected final static String OUTPUT_FILE_NAME = "CQA_Automation_Summary_Report.xlsx";
 
 
 
