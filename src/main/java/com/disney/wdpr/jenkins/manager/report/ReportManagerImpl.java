@@ -40,8 +40,6 @@ import com.disney.wdpr.jenkins.vo.Totals;
 public class ReportManagerImpl implements JobManager {
 
     private static Logger log = Logger.getLogger(ReportManagerImpl.class);
-
-    private String finalReportFilename;
     private JenkinsIntegration jenkinsIntegration;
 
     protected final static String OUTPUT_FILE_NAME = "CQA_Automation_Summary_Report.xlsx";
@@ -66,8 +64,6 @@ public class ReportManagerImpl implements JobManager {
         XSSFSheet sheet = workbook.createSheet();
 
         XSSFRow row = sheet.createRow(rowCount++);
-        XSSFCell cell = row.createCell(JOB_CELL);
-
         this.createHeaderRow(workbook, row);
 
         for (Totals totals : reportLines) {
@@ -84,7 +80,7 @@ public class ReportManagerImpl implements JobManager {
 
         try {
 
-            // Directory path where the xls file will be created is stored in the
+            // Directory path where the xlsx file will be created is stored in the
             // json config file.
             fout = new FileOutputStream(OUTPUT_FILE_NAME);
             outputStream = new ByteArrayOutputStream();
