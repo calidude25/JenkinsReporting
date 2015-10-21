@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	        http://www.springframework.org/schema/context 
+    	    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+<!-- 
+	<bean id="localWorkingDir" class="java.lang.String">
+		<constructor-arg value="${extract.local.working.directory}"/>
+	</bean>
+	<bean id="localArchiveDir" class="java.lang.String">
+		<constructor-arg value="${extract.local.archive.directory}"/>
+	</bean>
+ -->
+
+
+	<bean id="reportManager" class="com.disney.wdpr.jenkins.manager.report.ReportManagerImpl">
+		<property name="jenkinsIntegration" ref="jenkinsIntegration"/>
+
+ 	</bean>
+
+
+	<bean id="jenkinsIntegration" class="com.disney.wdpr.jenkins.integration.report.JenkinsIntegration" >
+		<property name="jenkinsURL" value="${JENKINS_URL}"/>
+ 	</bean>
+
+<!-- 	
+	<bean id="extractManager" class="com.disney.lms.manager.extract.ExtractManagerImpl">
+		<property name="localWorkingDirectory" ref="localWorkingDir" />
+		<property name="localArchiveDirectory" ref="localArchiveDir" />
+		<property name="commitmentsReportFilename" value="${extract.commitments.report.filename}" />
+		<property name="discussionReportFilename" value="${extract.discussion.report.filename}" />
+		<property name="commentsReportFilename" value="${extract.comments.report.filename}" />
+
+
+		<property name="employeeReportFilename" value="${extract.employee.report.filename}" />
+
+		<property name="ftpIntegrationInput" ref="ftpIntegrationInput" />
+		<property name="ftpIntegrationOutput" ref="ftpIntegrationOutput" />
+		<property name="loadEmployeeReport" ref="loadEmployeeReport" />
+		<property name="managerUtils" ref="managerUtils"/>
+		<property name="oDataIntegration" ref="oDataIntegration"/>
+		<property name="emailIntegration" ref="emailIntegration" />		
+
+		<property name="completeStatusFilename" value="${extract.complete.status.filename}" />		
+		<property name="outputReportDateFormat" value="${extract.output.report.date.format}" />		
+
+ 	</bean>
+ --> 	
+
+<!-- 
+	<bean id="loadEmployeeReport" class="com.disney.lms.manager.extract.LoadEmployeeReportImpl" />
+
+	<bean id="oDataIntegration" class="com.disney.lms.integration.extract.ODataIntegrationImpl" >
+		<property name="idpHost" value="${extract.idp.host}" />		
+		<property name="idpPath" value="${extract.idp.path}" />		
+		<property name="idpCommand" value="${extract.idp.command}" />		
+		<property name="idpClientId" value="${extract.idp.auth.client.id}" />		
+
+		<property name="jamHost" value="${extract.jam.api.host}" />		
+		<property name="jamPath" value="${extract.jam.api.path}" />		
+
+
+		<property name="jamGroupCommand" value="${extract.jam.api.group.command}" />		
+		<property name="jamDiscussionsCommand" value="${extract.jam.api.discussions.command}" />		
+		<property name="jamCommentCommand" value="${extract.jam.api.comment.command}" />		
+		<property name="jamCommentCreatorCommand" value="${extract.jam.api.comment.creator.command}" />		
+		<property name="jamTasksCommand" value="${extract.jam.api.tasks.command}" />		
+		<property name="jamTaskAssignmentCommand" value="${extract.jam.api.task.assignment.command}" />		
+	</bean>
+ -->	
+
+</beans>
