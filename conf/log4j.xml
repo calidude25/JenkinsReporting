@@ -3,7 +3,7 @@
 
 <log4j:configuration>
   <appender name="rolling" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="file" value="logs/lms.log" />
+    <param name="file" value="reports.log" />
     <param name="append" value="true" />
     <param name="datePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">

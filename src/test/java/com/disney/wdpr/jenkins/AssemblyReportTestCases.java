@@ -1,6 +1,8 @@
 package com.disney.wdpr.jenkins;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -32,7 +34,13 @@ public class AssemblyReportTestCases {
     @Test
     public void testProcess() throws Exception {
         String viewName = "03. Appium Mobile Tests";
-        reportManager.process(viewName);
+        String jobName = "Jenkins Reporting Mobile";
+
+        Map<String, String> paramMap = new HashMap<String, String>();
+        paramMap.put(Launch.PARAM_JOB_NAME, jobName);
+        paramMap.put(Launch.PARAM_VIEW_NAME, viewName);
+
+        reportManager.process(paramMap);
     }
 
     @Test

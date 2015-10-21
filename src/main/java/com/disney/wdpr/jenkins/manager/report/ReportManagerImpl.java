@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -22,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.disney.wdpr.jenkins.Launch;
 import com.disney.wdpr.jenkins.dto.report.Build;
 import com.disney.wdpr.jenkins.dto.report.BuildListing;
 import com.disney.wdpr.jenkins.dto.report.Job;
@@ -64,11 +66,12 @@ public class ReportManagerImpl implements JobManager {
     protected final static int COLUMN_COUNT = 5;
 
     @Override
-    public void process(String viewName) throws Exception {
-        List<Totals> reportLines = this.executeApiRequests(viewName);
+    public void process(Map<String, String> paramMap) throws Exception {
+        List<Totals> reportLines = this.executeApiRequests(paramMap.get(Launch.PARAM_VIEW_NAME), paramMap.get(Launch.PARAM_JOB_NAME));
+        this.createReport(reportLines);
+    }
 
-
-
+    private void createReport(List<Totals> reportLines) throws IOException {
         int rowCount = 0;
 
         XSSFWorkbook workbook = new XSSFWorkbook();
@@ -153,7 +156,6 @@ public class ReportManagerImpl implements JobManager {
 
     private void createRow(XSSFWorkbook workbook, XSSFRow row, Totals totals){
         XSSFCell cell = row.createCell(JOB_CELL);
-        decorateBoldCell(workbook, cell);
         cell.setCellValue(totals.getName());
 
         cell = row.createCell(COUNT_CELL);
@@ -178,7 +180,7 @@ public class ReportManagerImpl implements JobManager {
     }
 
 
-    protected List<Totals> executeApiRequests(String viewName) {
+    protected List<Totals> executeApiRequests(String viewName, String jobName) {
         List<Totals> reportLines = new ArrayList<Totals>();
 
         try {
@@ -195,35 +197,35 @@ public class ReportManagerImpl implements JobManager {
             for (JobListing jobListing : jobListings) {
 
                 log.info("Job Name: "+jobListing.getName());
-                NDC.push("Job: "+jobListing.getName());
-                jobTotal = new Totals(jobListing.getName());
 
-                Job job = jenkinsIntegration.getJob(jobListing.getName());
-                BuildListing buildListing = job.getLastBuild();
+                if (!jobName.equals(jobListing.getName())) {
+                    NDC.push("Job: " + jobListing.getName());
+                    jobTotal = new Totals(jobListing.getName());
+                    Job job = jenkinsIntegration.getJob(jobListing.getName());
+                    BuildListing buildListing = job.getLastBuild();
+                    TestReport testReport = null;
+                    if (buildListing != null) {
+                        log.info("last build: " + buildListing.getNumber());
+                        NDC.push(" - build: " + buildListing.getNumber());
+                        Build build = jenkinsIntegration.getBuild(job, buildListing.getNumber());
+                        log.info("Result: " + build.getResult());
+                        testReport = jenkinsIntegration.getTestReport(job, buildListing.getNumber());
 
-                TestReport testReport=null;
-                if (buildListing!= null) {
-                    log.info("last build: " + buildListing.getNumber());
-                    NDC.push(" - build: " + buildListing.getNumber());
-                    Build build = jenkinsIntegration.getBuild(job, buildListing.getNumber());
-                    log.info("Result: " + build.getResult());
-                    testReport = jenkinsIntegration.getTestReport(job, buildListing.getNumber());
+                        if (testReport == null) {
+                            log.info("No report for given build/job.");
+                        } else {
 
-                    if(testReport == null) {
-                        log.info("No report for given build/job.");
-                    } else {
+                            List<TestCase> testCases = testReport.getChildReports().get(0).getResult().getSuites().get(0).getTestCases();
 
-                        List<TestCase> testCases = testReport.getChildReports().get(0).getResult().getSuites().get(0).getTestCases();
+                            for (TestCase testCase : testCases) {
+                                testCase.incrementCounts(jobTotal, runningTotal);
+                            }
 
-                        for (TestCase testCase : testCases) {
-                            testCase.incrementCounts(jobTotal,runningTotal);
+                            log.info("Test Report: Total=" + jobTotal.getTestTotal() + " - Passed=" + jobTotal.getPassTotal() + " - Failed=" + jobTotal.getFailTotal() + " - Skipped=" + jobTotal.getSkipTotal());
+
                         }
-
-                        log.info("Test Report: Total="+jobTotal.getTestTotal()+" - Passed="+jobTotal.getPassTotal()+" - Failed="+jobTotal.getFailTotal()+" - Skipped="+jobTotal.getSkipTotal());
-
                     }
                 }
-
                 reportLines.add(jobTotal);
                 NDC.pop();
                 NDC.pop();

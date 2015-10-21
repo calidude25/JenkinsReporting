@@ -1,7 +1,9 @@
 package com.disney.wdpr.jenkins;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -19,6 +21,8 @@ public class Launch
 
     // private Map<String, String> arguments;
     private static AbstractApplicationContext appContext;
+    public final static String PARAM_VIEW_NAME = "viewName";
+    public final static String PARAM_JOB_NAME = "jobName";
 
     public final static String SHARED_CONTEXT = "sharedContext.xml";
     public final static String REPORT_CONTEXT = "reportContext.xml";
@@ -57,10 +61,12 @@ public class Launch
 
         try
         {
-//            if (args == null || args.length < 1)
-//            {
-//                throw new RuntimeException("Parameter list cannot be null: \n" + help());
-//            }
+            if (args == null || args.length < 2)
+            {
+                throw new RuntimeException("Parameter list cannot be null: \n" + help());
+            }
+
+            Map<String, String> paramMap = this.getParameterMap(args);
 
             setAppContext(new String[] { SHARED_CONTEXT,REPORT_CONTEXT});
             String mainBean=REPORT_BEAN;
@@ -75,13 +81,24 @@ public class Launch
             DiagSignalHandler.install("ABRT");// Abnormal termination. The JVM raises this signal whenever it detects a JVM fault.
 
             final JobManager job = (JobManager) Launch.appContext.getBean(mainBean);
-            job.process("03. Appium Mobile Tests");
+            job.process(paramMap);
         }
         catch (final Exception e)
         {
             Launch.LOG.error("Failure launching Spring", e);
             throw new RuntimeException(e);
         }
+    }
+
+    private Map<String, String> getParameterMap(String[] args) {
+        Map<String, String> retMap = new HashMap<String, String>();
+        String[] keyValue = args[0].split("=");
+        retMap.put(keyValue[0], keyValue[1]);
+
+        keyValue = args[1].split("=");
+        retMap.put(keyValue[0], keyValue[1]);
+
+        return retMap;
     }
 
     protected void setAppContext(final String[] contextFiles)
@@ -100,11 +117,9 @@ public class Launch
     private String help()
     {
         final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\nValid Parameters: audit, auditNow, extract or extractNow");
-        stringBuilder.append("\n\taudit - Start regularly scheduled Proctor Audit Violation Report");
-        stringBuilder.append("\n\tauditNow - Launch Proctor Audit Violation Report Now");
-        stringBuilder.append("\n\textract - Start regularly scheduled Jam Extract Report");
-        stringBuilder.append("\n\textractNow - Launch Jam Extract Report Now");
+        stringBuilder.append("\nValid Parameters: "+PARAM_VIEW_NAME+" and "+PARAM_JOB_NAME);
+        stringBuilder.append("\n\t"+PARAM_VIEW_NAME+" - This should be set to the current view in Jenkins that you wish to run reports against: example: viewName=\"03. Appium Mobile Tests\"");
+        stringBuilder.append("\n\t"+PARAM_JOB_NAME+" - Name of the current job. This will be filtered out of the reports.");
         return stringBuilder.toString();
     }
 
