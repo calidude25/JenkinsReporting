@@ -1,1 +1,1 @@
-C:\Users\matt.b.carson\JenkinsReporting\target>java -classpath jenkins-reporting.jar com.disney.wdpr.jenkins.Launch
+java -classpath ..\target\jenkins-reporting.jar com.disney.wdpr.jenkins.Launch
