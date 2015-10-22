@@ -42,7 +42,7 @@ public class ReportManagerImpl implements JobManager {
     private static Logger log = Logger.getLogger(ReportManagerImpl.class);
     private JenkinsIntegration jenkinsIntegration;
 
-    protected final static String OUTPUT_FILE_NAME = "CQA_Automation_Summary_Report.xlsx";
+    protected final static String OUTPUT_FILE_NAME = "GQE_Automation_Summary_Report.xlsx";
     protected final static int JOB_CELL = 0;
     protected final static int COUNT_CELL = 1;
     protected final static int PASS_CELL = 2;
