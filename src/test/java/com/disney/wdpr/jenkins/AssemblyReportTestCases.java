@@ -71,7 +71,8 @@ public class AssemblyReportTestCases {
 
             TestReport testReport = jenkinsIntegration.getTestReport(job, buildListing.getNumber());
             if(testReport == null) {
-                throw new RuntimeException("No report for given build/job.");
+//                throw new RuntimeException("No report for given build/job.");
+                // could be the job is running at the moment.
             } else {
                 log.info("Test Report: Total="+testReport.getTotalCount()+" - Passed="+testReport.getPassCount()+" - Failed="+testReport.getFailCount()+" - Skipped="+testReport.getSkipCount());
 
