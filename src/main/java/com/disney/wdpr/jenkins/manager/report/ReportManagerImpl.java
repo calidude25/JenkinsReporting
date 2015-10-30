@@ -140,6 +140,7 @@ public class ReportManagerImpl implements JobManager {
 
     private void createRow(XSSFWorkbook workbook, XSSFRow row, Totals totals){
         XSSFCell cell = row.createCell(JOB_CELL);
+
         cell.setCellValue(totals.getName());
 
         cell = row.createCell(COUNT_CELL);
@@ -210,7 +211,9 @@ public class ReportManagerImpl implements JobManager {
                         }
                     }
                 }
-                reportLines.add(jobTotal);
+                if(jobTotal!=null) {
+                    reportLines.add(jobTotal);
+                }
                 NDC.pop();
                 NDC.pop();
             }
