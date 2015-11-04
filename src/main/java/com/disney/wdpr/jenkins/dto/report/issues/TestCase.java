@@ -1,17 +1,22 @@
 package com.disney.wdpr.jenkins.dto.report.issues;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import com.disney.wdpr.jenkins.manager.report.ReportManagerImpl;
 import com.disney.wdpr.jenkins.vo.Totals;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TestCase {
+
+    private static Logger log = Logger.getLogger(TestCase.class);
     protected final static String SETUP_METHOD ="setUp";
     protected final static String TEARDOWN_METHOD ="tearDown";
     protected final static String PASS ="PASSED";
     protected final static String FAIL ="FAILED";
     protected final static String SKIP ="SKIPPED";
+    protected final static String FIXED ="FIXED";
 
     @JsonProperty("name")
     private String name;
@@ -39,6 +44,7 @@ public class TestCase {
         if(!isConfigMethod(name)) {
             switch (status) {
             case PASS:
+            case FIXED:
                 jobTotals.incPass();
                 runningTotals.incPass();
                 break;
@@ -49,6 +55,9 @@ public class TestCase {
             case SKIP:
                 jobTotals.incSkip();
                 runningTotals.incSkip();
+                break;
+            default:
+                log.error("STATUS: "+status+" is not recognized. This needs to be added and handled in the reporting code.");
                 break;
             }
         }
