@@ -17,6 +17,7 @@ public class TestCase {
     protected final static String FAIL ="FAILED";
     protected final static String SKIP ="SKIPPED";
     protected final static String FIXED ="FIXED";
+    protected final static String REGRESSION ="REGRESSION";
 
     @JsonProperty("name")
     private String name;
@@ -49,6 +50,7 @@ public class TestCase {
                 runningTotals.incPass();
                 break;
             case FAIL:
+            case REGRESSION:
                 jobTotals.incFail();
                 runningTotals.incFail();
                 break;
