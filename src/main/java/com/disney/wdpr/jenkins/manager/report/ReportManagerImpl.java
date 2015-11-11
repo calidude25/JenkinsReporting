@@ -197,17 +197,22 @@ public class ReportManagerImpl implements JobManager {
                         testReport = jenkinsIntegration.getTestReport(job, buildListing.getNumber());
 
                         if (testReport == null) {
-                            log.info("No report for given build/job.");
+                            log.warn("No report for given build/job.");
                         } else {
 
-                            List<TestCase> testCases = testReport.getChildReports().get(0).getResult().getSuites().get(0).getTestCases();
+                            try {
+                                List<TestCase> testCases = testReport.getChildReports().get(0).getResult().getSuites().get(0).getTestCases();
 
-                            for (TestCase testCase : testCases) {
-                                testCase.incrementCounts(jobTotal, runningTotal);
+
+
+                                for (TestCase testCase : testCases) {
+                                    testCase.incrementCounts(jobTotal, runningTotal);
+                                }
+
+                                log.info("Test Report: Total=" + jobTotal.getTestTotal() + " - Passed=" + jobTotal.getPassTotal() + " - Failed=" + jobTotal.getFailTotal() + " - Skipped=" + jobTotal.getSkipTotal());
+                            } catch (IndexOutOfBoundsException e) {
+                                log.warn("API report incomplete");
                             }
-
-                            log.info("Test Report: Total=" + jobTotal.getTestTotal() + " - Passed=" + jobTotal.getPassTotal() + " - Failed=" + jobTotal.getFailTotal() + " - Skipped=" + jobTotal.getSkipTotal());
-
                         }
                     }
                 }
