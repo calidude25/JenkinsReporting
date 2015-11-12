@@ -183,7 +183,7 @@ public class ReportManagerImpl implements JobManager {
 
                 log.info("Job Name: "+jobListing.getName());
 
-                if (!jobName.equals(jobListing.getName())) {
+                if (!jobName.equals(jobListing.getName()) && !jobListing.getName().toLowerCase().contains("debug")) {
                     NDC.push("Job: " + jobListing.getName());
                     jobTotal = new Totals(jobListing.getName());
                     Job job = jenkinsIntegration.getJob(jobListing.getName());
@@ -215,11 +215,12 @@ public class ReportManagerImpl implements JobManager {
                             }
                         }
                     }
+
+                    if(jobTotal!=null) {
+                        reportLines.add(jobTotal);
+                    }
+                    NDC.pop();
                 }
-                if(jobTotal!=null) {
-                    reportLines.add(jobTotal);
-                }
-                NDC.pop();
                 NDC.pop();
             }
             reportLines.add(runningTotal);
