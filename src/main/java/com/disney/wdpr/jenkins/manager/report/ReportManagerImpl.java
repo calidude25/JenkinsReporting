@@ -7,12 +7,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.poi.common.usermodel.Hyperlink;
@@ -182,13 +186,15 @@ public class ReportManagerImpl implements JobManager {
             CreationHelper createHelper = workbook.getCreationHelper();
             XSSFHyperlink link = (XSSFHyperlink)createHelper.createHyperlink(Hyperlink.LINK_URL);
 
-            link.setAddress(URLEncoder.encode(url,encodeFormat));
+            String encodedURL = URIUtil.encodeQuery(url);
+
+            link.setAddress(encodedURL);
             cell.setHyperlink(link);
             cell.setCellStyle(hlinkstyle);
-        } catch (UnsupportedEncodingException e) {
-            log.warn(e+" - "+encodeFormat+" - "+url);
         } catch (RuntimeException ex) {
             log.error(ex+" - Failure creating hyperlink - "+url, ex);
+        } catch (URIException e) {
+            log.error(e+" - Failure creating hyperlink - "+url, e);
         }
         cell.setCellValue(name);
     }

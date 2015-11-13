@@ -32,9 +32,9 @@ public class AssemblyReportTestCases {
 
     @Test
     public void testProcess() throws Exception {
-//        String viewName = "03. Appium Mobile Tests";
+        String viewName = "03. Appium Mobile Tests";
 //        String jobName = "Jenkins Reporting Mobile";
-        String viewName = "DVC Automation";
+//        String viewName = "DVC Automation";
         String jobName = "Jenkins Reporting DVC Automation";
 
         Map<String, String> paramMap = new HashMap<String, String>();
