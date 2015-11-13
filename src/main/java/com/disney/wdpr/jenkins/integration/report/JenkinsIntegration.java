@@ -1,13 +1,10 @@
 package com.disney.wdpr.jenkins.integration.report;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.http.client.BufferingClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
@@ -59,12 +56,16 @@ public class JenkinsIntegration {
     }
 
     public TestReport getTestReport(Job job, String buildNumber) {
-        String completeURL = jenkinsURL+JOB_URI+job.getName()+URI_SLASH+buildNumber+TEST_REPORT_URI+API_JSON_URI;
+        String baseUrl = jenkinsURL+JOB_URI+job.getName()+URI_SLASH+buildNumber+TEST_REPORT_URI;
+        log.info("Base Url: "+baseUrl);
+
+        String completeURL = baseUrl+API_JSON_URI;
 
         final RestTemplate restTemplate = getRestTemplate();
         TestReport testReport=null;
         try {
             testReport = restTemplate.getForObject(completeURL, TestReport.class);
+            testReport.setUrl(baseUrl);
         } catch (HttpClientErrorException e) {
             log.error("Unable to get test results for job: "+job.getName()+" - build: "+buildNumber+" - url: "+completeURL);
             // do nothing for now. No reports for this build.

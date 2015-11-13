@@ -3,6 +3,7 @@ package com.disney.wdpr.jenkins.vo;
 public class Totals {
 
     private String name;
+    private String url;
     private int testTotal = 0;
     private int passTotal = 0;
     private int failTotal = 0;
@@ -10,6 +11,12 @@ public class Totals {
 
     public Totals(String name) {
         this.name = name;
+    }
+    public String getUrl() {
+        return url;
+    }
+    public void setUrl(String url) {
+        this.url = url;
     }
     public void incPass(){
         this.passTotal++;

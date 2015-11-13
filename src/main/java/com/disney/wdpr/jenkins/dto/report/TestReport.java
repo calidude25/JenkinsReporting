@@ -24,6 +24,8 @@ public class TestReport {
     @JsonProperty("totalCount")
     private String totalCount;
 
+    private String url;
+
     public List<ChildReport> getChildReports() {
         return childReports;
     }
@@ -38,6 +40,14 @@ public class TestReport {
         int total = Integer.valueOf(this.totalCount);
         int pass = total - skip - fail;
         return pass;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public int getFailCount() {

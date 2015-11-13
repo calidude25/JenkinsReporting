@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,11 +15,15 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.apache.poi.common.usermodel.Hyperlink;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.examples.html.ToHtml;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFHyperlink;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -93,6 +99,7 @@ public class ReportManagerImpl implements JobManager {
             if (lastIndex > 0) {
                 String htmlFile = OUTPUT_FILE_NAME.substring(0, lastIndex) + ".html";
                 ToHtml toHtml = ToHtml.create(workbook, new PrintWriter(new FileWriter(htmlFile)));
+
                 toHtml.setCompleteHTML(true);
                 toHtml.printPage();
 
@@ -141,7 +148,11 @@ public class ReportManagerImpl implements JobManager {
     private void createRow(XSSFWorkbook workbook, XSSFRow row, Totals totals){
         XSSFCell cell = row.createCell(JOB_CELL);
 
-        cell.setCellValue(totals.getName());
+        if(totals.getUrl() == null) {
+            cell.setCellValue(totals.getName());
+        } else {
+            createLink(totals.getName(), totals.getUrl(), cell, workbook);
+        }
 
         cell = row.createCell(COUNT_CELL);
         cell.setCellValue(totals.getTestTotal());
@@ -159,6 +170,45 @@ public class ReportManagerImpl implements JobManager {
         cell.setCellValue(totals.getSkipTotal());
     }
 
+    private void createLink(String name, String url,  XSSFCell cell, XSSFWorkbook workbook) {
+        String encodeFormat = "UTF-8";
+        try {
+            XSSFCellStyle hlinkstyle = workbook.createCellStyle();
+            XSSFFont hlinkfont = workbook.createFont();
+            hlinkfont.setUnderline(XSSFFont.U_SINGLE);
+            hlinkfont.setColor(HSSFColor.BLUE.index);
+            hlinkstyle.setFont(hlinkfont);
+
+            CreationHelper createHelper = workbook.getCreationHelper();
+            XSSFHyperlink link = (XSSFHyperlink)createHelper.createHyperlink(Hyperlink.LINK_URL);
+
+            link.setAddress(URLEncoder.encode(url,encodeFormat));
+            cell.setHyperlink(link);
+            cell.setCellStyle(hlinkstyle);
+        } catch (UnsupportedEncodingException e) {
+            log.warn(e+" - "+encodeFormat+" - "+url);
+        } catch (RuntimeException ex) {
+            log.error(ex+" - Failure creating hyperlink - "+url, ex);
+        }
+        cell.setCellValue(name);
+    }
+
+//    private String createLink(String name, String url){
+//        String link = null;
+//        String encodeFormat = "UTF-8";
+//        try {
+//            if(url!=null) {
+//                link = "<a href=\""+URLEncoder.encode(url,encodeFormat)+"\">"+name+"</a>";
+//            } else {
+//                log.warn("url for job name is null");
+//                link = name;
+//            }
+//        } catch (UnsupportedEncodingException e) {
+//            log.warn(e+" - "+encodeFormat+" - "+url);
+//            link = name;
+//        }
+//        return link;
+//    }
 
     protected File getFile(final String name){
         return new File(name);
@@ -199,11 +249,10 @@ public class ReportManagerImpl implements JobManager {
                         if (testReport == null) {
                             log.warn("No report for given build/job.");
                         } else {
+                            jobTotal.setUrl(testReport.getUrl());
 
                             try {
                                 List<TestCase> testCases = testReport.getChildReports().get(0).getResult().getSuites().get(0).getTestCases();
-
-
 
                                 for (TestCase testCase : testCases) {
                                     testCase.incrementCounts(jobTotal, runningTotal);
