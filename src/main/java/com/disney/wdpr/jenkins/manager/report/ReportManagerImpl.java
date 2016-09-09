@@ -299,7 +299,7 @@ public class ReportManagerImpl implements JobManager {
         return reportLines;
     }
     
-    
+//    with out view
     protected List<Totals> executeApiRequests(String jobName) {
         List<Totals> reportLines = new ArrayList<Totals>();
         Totals runningTotal = new Totals("Totals");
@@ -361,7 +361,7 @@ public class ReportManagerImpl implements JobManager {
         return reportLines;
     }
     
-    
+//  with out view
     
     
     
