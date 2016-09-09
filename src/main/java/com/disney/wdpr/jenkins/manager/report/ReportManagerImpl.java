@@ -63,7 +63,14 @@ public class ReportManagerImpl implements JobManager {
 
     @Override
     public void process(Map<String, String> paramMap) throws Exception {
-        List<Totals> reportLines = this.executeApiRequests(paramMap.get(Launch.PARAM_VIEW_NAME), paramMap.get(Launch.PARAM_JOB_NAME));
+    	
+    	 List<Totals> reportLines = null;
+    	if(paramMap.get(Launch.PARAM_VIEW_NAME).equalsIgnoreCase("EMPTY")) {
+    		  reportLines = this.executeApiRequests( paramMap.get(Launch.PARAM_JOB_NAME));
+    	}else {
+    		 reportLines = this.executeApiRequests(paramMap.get(Launch.PARAM_VIEW_NAME), paramMap.get(Launch.PARAM_JOB_NAME));
+    	}
+       
         this.createReport(reportLines);
     }
 
@@ -291,6 +298,73 @@ public class ReportManagerImpl implements JobManager {
         }
         return reportLines;
     }
+    
+    
+    protected List<Totals> executeApiRequests(String jobName) {
+        List<Totals> reportLines = new ArrayList<Totals>();
+        Totals runningTotal = new Totals("Totals");
+        Totals jobTotal = null;
+
+        try {
+
+            log.info("starting process...");
+
+         
+            jobTotal = new Totals(jobName);
+                    Job job = jenkinsIntegration.getJob(jobName);
+                    BuildListing buildListing = job.getLastBuild();
+                    TestReport testReport = null;
+                    if (buildListing != null) {
+                        log.info("last build: " + buildListing.getNumber());
+                        NDC.push(" - build: " + buildListing.getNumber());
+                        Build build = jenkinsIntegration.getBuild(job, buildListing.getNumber());
+                        log.info("Result: " + build.getResult());
+                        testReport = jenkinsIntegration.getTestReport(job, buildListing.getNumber());
+
+                        if (testReport == null) {
+                            log.warn("No report for given build/job.");
+                        } else {
+                            jobTotal.setUrl(testReport.getUrl());
+
+                            try {
+                                List<TestCase> testCases = testReport.getChildReports().get(0).getResult().getSuites().get(0).getTestCases();
+
+                                for (TestCase testCase : testCases) {
+                                    testCase.incrementCounts(jobTotal, runningTotal);
+                                }
+
+                                log.info("Test Report: Total=" + jobTotal.getTestTotal() + " - Passed=" + jobTotal.getPassTotal() + " - Failed=" + jobTotal.getFailTotal() + " - Skipped=" + jobTotal.getSkipTotal());
+                            } catch (IndexOutOfBoundsException e) {
+                                log.warn("API report incomplete");
+                            }
+                        }
+                    }
+
+                    if(jobTotal!=null) {
+                        reportLines.add(jobTotal);
+                    }
+                    NDC.pop();
+                
+                NDC.pop();
+           
+            reportLines.add(runningTotal);
+            log.info("Total Tests="+runningTotal.getTestTotal()+" - Total Passed="+runningTotal.getPassTotal()+" - Total Failed="+runningTotal.getFailTotal()+" - Total Skipped="+runningTotal.getSkipTotal());
+            log.warn("API requests complete");
+
+        } catch (final Exception e) {
+             log.fatal("Failure in process method",e);
+             throw(e);
+        } finally {
+            log.warn("process method complete...");
+            NDC.remove();
+        }
+        return reportLines;
+    }
+    
+    
+    
+    
+    
 
 
     public static void decorateHeaderCell(XSSFWorkbook workbook, XSSFCell cell) {
