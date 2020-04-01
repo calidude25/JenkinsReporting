@@ -1,1 +1,1 @@
-java -classpath target\jenkins-reporting.jar;conf com.disney.wdpr.jenkins.Launch %*
+java -classpath target\jenkins-reporting.jar;conf com.reporter.jenkins.Launch %*
